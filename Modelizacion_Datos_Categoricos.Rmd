@@ -1,0 +1,674 @@
+---
+title: ""
+author: ""
+date: ""
+output: 
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+    number_sections: yes
+    toc: false
+    toc_depth: 4
+    df_print: kable
+  html_document:
+    toc: false
+    toc_depth: '4'
+    df_print: paged
+    latex_engine: xelatex
+    number_sections: yes
+fontsize: 11pt
+geometry: margin=2.5cm
+linestretch: 1.2
+classoption: oneside
+colorlinks:
+  linkcolor: blue
+  citecolor: grey
+  urlcolor: blue
+  toccolor: grey
+subtitle: Modelización de datos categóricos. Grado en Estadística. Ugr
+header-includes:
+- \usepackage{threeparttable}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{colortbl}
+- \usepackage{graphicx}
+- \usepackage{multirow}
+- \usepackage{array}
+- \usepackage{multirow} % para las tablas
+- \usepackage{graphicx}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy} 
+- "\\setlength{\\headheight}{13.59999pt}"
+- "\\usepackage[spanish,es-tabla]{babel}"
+- "\\usepackage{fancyhdr}"
+- "\\pagestyle{fancy}"
+- "\\fancyhf{}"
+- "\\rhead{\\includegraphics[width=4cm]{C:/Users/carla/OneDrive/Escritorio/ESTADÍSTICA/4º Estadística/Modelización de datos categóricos/TRABAJO/imagen2}}"
+- "\\lhead{\\includegraphics[width=1.5cm]{C:/Users/carla/OneDrive/Escritorio/ESTADÍSTICA/4º Estadística/Modelización de datos categóricos/TRABAJO/imagen1}}"
+- "\\rfoot{\\thepage}"
+- "\\setlength{\\headheight}{49.25772pt}"
+- "\\addtolength{\\topmargin}{-34.25772pt}"
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+
+{\Huge \textbf{Análisis de factores de riesgo en miocardiopatía arritmogénica} \par}
+
+\vspace{1.5cm}
+{\LARGE Carla Martín Pérez\par}
+\vspace{1cm}
+
+{\Large Modelización de datos categóricos. Grado en Estadística. UGR\par}
+
+\vspace{2cm}
+\includegraphics[width=0.5\textwidth]{C:/Users/carla/OneDrive/Escritorio/ESTADÍSTICA/4º Estadística/Modelización de datos categóricos/TRABAJO/logoUGR.PNG}
+
+\vfill
+{\large Fecha: 29 de mayo de 2025 \par}
+
+\end{titlepage}
+
+\newpage
+
+\tableofcontents
+\newpage
+
+# Introducción
+
+En este trabajo se estudian los datos de pacientes reales, los cuales han estado bajo seguimiento entre los meses de febrero y junio de 2023 y se ha podido recoger información sobre distintas pruebas médicas y síntomas. Se excluyeron aquellos con contraindicaciones absolutas para la ergometría, como el embarazo, limitaciones físicas para el ejercicio, valvulopatías graves, antecedentes recientes de síndrome coronario agudo o episodios arrítmicos severos, así como enfermedad coronaria no tratada.
+
+Estos pacientes tienen la enfermedad miocardiopatía arritmogénica (MCA) es una enfermedad hereditaria del músculo cardiaco. Exactamente se encuentran pacientes con la enfermedad miocardiopatía arritmogénica con afectación del ventrículo izquierdo, MCAVI, y un grupo control de individuos sanos, los cuales han sido sometidos a pruebas de ergometría. 
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{C:/Users/carla/OneDrive/Escritorio/ESTADÍSTICA/TFG/maviHeart.png}
+\end{center}
+\begin{center}
+\textit{Figura 1: Comparación de un corazón sano y un corazón con MCAVD}
+\end{center}
+
+Algunos estudios que han analizado la asociación de la miocardiopatía arritmogénica (MCA) con factores como la edad, sexo, fumar y presencia de EVBRD:
+
+- **Sexo**. Un estudio publicado en *EP Europace* estudió las diferencias entre el sexo y la progresión de la enfermedad y el riesgo arrítmico en pacientes con MCA. Se encontró que el sexo masculino se asociaba con una enfermedad más severa. Sin embargo, al ajustar por la exposición al ejercicio, el sexo masculino ya no fue un marcador de riesgo para arritmias ventriculares, sugiriendo que la mayor exposición al ejercicio en hombres podría haber sido un factor de confusión en estudios previos. [1]
+
+- **Fumar**. El hábito de fumar es un factor de riesgo para enfermedades cardíacas conocido y en un estudio publicado por la *Fundación Española del Corazón* se ha concluido que aunque este factor no tenga una relación directa con la MCA aumenta el riesgo de desarrolar enfermedades coronarias y puede reducir el flujo sanguíneo. [2]
+
+- **Edad**. Un estudio recogido en la Revista Española de Cardiología obtuvo como conclusión que la MCA es una de las mayores causas de muerte súbita en adolescentes y adultos jóvenes. [3]
+
+- **EV-BRD**. La presencia de EV-BRD es uno de los criterios menores para el diagnóstico de esta enfermedad, criterio recogido en los *Criterios de Padua*. [4]
+
+Concretamente, este trabajo tiene como objetivo analizar la dependencia y asociación de presentar EV-BRD con tener o no la enfermedad MCAVI junto a otros factores de riesgo como son la edad, ser o no fumador y el sexo .
+
+
+
+Para la realización de esta actividad se ha elegido las siguientes variables:
+
+1. **Grupos**. Esta es una variable categórica nominal, encontrándonos en ella dos grupos, uno enfermo y otro sano, con las siguiente categorías: *0:MCAVI*/*1:Sanos*
+
+2. **Fumar**. En esta variable categórica dicotómica se indica si la persona es fumadora o no. (*0: No*/*1: Sí*)
+
+3. **Presencia de extrasístoles con bloqueo de rama derecha (EV-BRD)**. Esta es una variable categórica dicotómica, donde se observa si un individuo ha presentado extrasístoles con bloqueo de rama derecha en una prueba de esfuerzo. (*0: No*/*1: Sí*)
+
+4. **Sexo**. Esta es una variable categórica nominal, ya que tiene las siguiente categorías: *0: Mujer*/*1: Hombre*.
+
+5. **Edad**, como variable estrato. Esta variable está divida en 7 categorías las cuales son rangos de edad, *1: 0-14*, *2: 15-20*, *3: 21-30*, *4: 31-40*, *5: 41-50*, *6: 51-60*, *7: >61*.
+
+\newpage
+
+# Metodología y resultados
+
+## Modelo log-lineal
+
+Para comenzar se contrasta si un modelo que incluye determinados parámetros de asociación se adapta mejor a los datos que otro modelo que no los incorpora siendo el más parsimonioso, con el objetivo de obtener el modelo log-lineal.
+
+Para obtener este modelo se usará el método *backward*, método que parte del modelo más complejo, es decir, el que incluye todos los efectos (modelo saturado), y va eliminando efectos hacía atrás. Por lo tanto, este método en cada etapa contrasta cada modelo resultante de la eliminación de términos de la etapa justamente anterior que, basándose en el p-valor, compara el p-valor de cada parámetro, eliminando el mayor p-valor entre los que son mayores que el nivel de significación. Este método termina cuando cada uno de los parámetros tienen un p-valor menor que el nivel de significación, resultando el modelo más parsimonioso y que se ajusta bien a los datos.
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo=TRUE,  message=T, warning=F, eval=TRUE, comment="", results="markup")
+# comment evita el que aparezca el símbolo ## en el 
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(scales)
+```
+
+```{r, warning=FALSE, message=FALSE, results='hide', echo=FALSE}
+#Datos que vamos a usar
+datos <- read_xlsx("basedatos.xlsx", col_names = T)
+datos <- as.data.frame(datos)
+```
+
+```{r, echo=FALSE, results='hide'}
+datos <- datos[, c(2, 6, 94, 5, 4)]
+datos <- datos[-c(64:83),]
+colnames(datos) <- c("GROUP", "Fumar", "EVBRD", "Sexo", "Edad")
+```
+
+```{r, echo=FALSE}
+datos$GROUP <- factor(datos$GROUP, levels = c(0, 1), labels = c("MCAVI", "Sanos"))
+
+datos$Fumar <- factor(datos$Fumar, levels = c(0, 1), labels = c("No", "Sí"))
+
+datos$EVBRD <- factor(datos$EVBRD, levels = c(0, 1), labels = c("No", "Sí"))
+
+datos$Sexo <- factor(datos$Sexo, levels = c(0, 1), labels = c("Mujer", "Hombre"))
+
+datos$Edad <- factor(datos$Edad, levels = 1:7, labels = c("0-14", "15-20", "21-30", "31-40", "41-50", "51-60", ">61"))
+```
+
+
+```{r, warning=FALSE, message=FALSE, results='hide', echo=FALSE}
+datos <- table(datos)
+```
+
+
+```{r, echo=FALSE, results='hide'}
+datos <- as.data.frame(datos)
+datos
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+require(MASS)
+```
+
+```{r, results='hide', echo=FALSE}
+saturado = glm(Freq ~GROUP*Fumar*EVBRD*Edad*Sexo , family = poisson, data = datos)
+
+names(saturado)
+
+saturado$param
+
+summary(saturado)
+```
+
+
+```{r, echo=FALSE, results='hide', warning=FALSE}
+modelo_final <- step(saturado, direction="backward", test="Chisq")
+modelo_final
+```
+
+```{r, echo=FALSE, results='hide'}
+summary(loglm(formula = Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + GROUP:Edad + Fumar:Sexo + EVBRD:Sexo + Fumar:EVBRD:Sexo, data = datos))$test[1,]
+```
+
+|                  | $X^{2}$     | df     | p-valor|
+|----------------------|---------|---------|---------|
+| Likelihood Ratio | 50.983  | 90 | 0.999 |
+
+\begin{center}
+\textit{Tabla 1: Contraste de bondad de ajuste}
+\end{center}
+
+Tras aplicar este método, se ha obtenido que el modelo más parsimonioso y que mejor se ajusta a los datos es:
+\begin{center}
+\textbf{(GB, FB, GE, FS, BS, FBS)}
+\end{center}
+
+Donde:
+
+- **G**: efecto de la variable GROUP.
+- **F**: efecto de la variable Fumar.
+- **B**: efecto de la variable EVBRD.
+- **E**: efecto de la variable Edad.
+- **S**: efecto de la variable Sexo.
+
+A partir de los resultados obtenidos en la tabla, no hay evidencias estadísticas significativas para rechazar la hipótesis nula ya que el p-valor $>$ 0.05, por lo que se ha obtenido el objetivo de este apartado.
+
+### Fórmula del modelo log-lineal
+
+$ln(m_{ijklm})= \mu + \lambda_{i}^{G} + \lambda_{j}^{F} + \lambda_{k}^{B} + \lambda_{l}^{E} + \lambda_{m}^{S} + \lambda_{ik}^{GB} + \lambda_{jk}^{FB} + \lambda_{il}^{GE} + \lambda_{jm}^{FS} + \lambda_{km}^{BS} + \lambda_{jkm}^{FBS}, \\ i, j, k, l = 1, 2, m = 2, 3, .., 7.$
+
+
+### Grafo
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(igraph)
+
+grafo <- graph_from_literal(
+  G -- B,  # GB
+  F -- B,
+  F -- S,
+  B -- S,
+  G -- E
+)
+
+set.seed(123)
+plot(grafo,
+     layout = layout_in_circle,
+     vertex.color = "#AED6F1",
+     vertex.size = 50,
+     vertex.label.cex = 2,
+     vertex.label.color = "black",
+     edge.width = 2,
+     edge.color = "#5D6D7E")
+```
+
+\begin{center}
+\textit{Figura 2: Grafo del modelo log-lineal}
+\end{center}
+
+En este grafo queda representada cada una de las relaciones de las variables, donde se observa que:
+
+- La variable **Edad** es condicionalmente independiente de Presencia de extrasístole, Fumar y Sexo dada la variable GROUP.
+- La variable **Group** es condicionalmente independiente de Sexo y Fumar dada la Presencia de extrasístole.
+
+Aparte de analizar la independencia, se puede analizar la colapsabilidad:
+
+- La tabla es colapsable en **Edad**, y la asociación de GROUP, Sexo, Fumar y EVBRD se podría estudiar en la tabla marginal ${n_{i, j, k, \bullet, m}}$.
+- La tabla es colapsable en **Edad** y **GROUP**, y la asociación de Sexo, Fumar y EVBRD se podría estudiar en la tabla marginal tridimensional ${n_{\bullet, j, k, \bullet, m}}$.
+- La tabla es colapsable en **Sexo**, **Fumar** y **EVBRD**, y la asociación de Edad y GROUP se podría estudiar en la tabla bidimensional ${n_{i, \bullet, \bullet, l, m}}$.
+
+### Residuos
+
+Tras obtener el modelo y saber que se ajusta bien a los datos, se realizará un análisis de los residuos para conocer como de bien se ajusta en cada uno de los posibles cruces de categorías.
+
+Hipótesis:
+
+\[
+\begin{cases}
+    H_0 : r_{i}=0 \\
+    H_1 : r_{i} \neq 0
+\end{cases}
+\]
+
+
+```{r, echo=FALSE}
+contrasts(datos$GROUP) = contr.treatment(2, 2)
+contrasts(datos$Fumar) = contr.treatment(2, 2) 
+contrasts(datos$EVBRD) = contr.treatment(2, 2)
+contrasts(datos$Sexo) = contr.treatment(2, 2)
+contrasts(datos$Edad) = contr.treatment(7, 7)
+```
+
+```{r, results='hide', echo=FALSE}
+modelo.glm = glm(Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + GROUP:Edad + Fumar:Sexo + EVBRD:Sexo + Fumar:EVBRD:Sexo, family=poisson,data=datos)
+
+residuos_estandar = rstandard(modelo.glm)
+cbind(datos,residuos_estandar)
+```
+
+En el apartado de *Anexo* se encuentra la \textit{Tabla 2: Análisis de los residuos}, la cual vienen representados los residuos de cada una de las combinaciones posibles de las cinco variables consideradas en el modelo. Tras revisar dichos residuos se observa que únicamente una combinación presenta un residuo significativamente distinto de cero (en valor absoluto superior a 1.96), lo cual sugiere un posible desajuste puntual del modelo.
+
+Esta celda corresponde a la combinación Sano, no fumador, presenta extrasístoles, hombre y mayor de 61 años con un solo individuo por lo que el porcentaje de desajuste es menor de 0.01.
+
+En conjunto, el análisis de los residuo no revela patrones sistemáticos de desajuste, por lo que se considera que el modelo ajusta adecuadamente a los datos.
+
+### Esimaciones de los parámetros del modelo log-lineal ajustado
+
+```{r, echo=FALSE, results='hide'}
+	#--> Estimamos los parametros del modelo (las ultimas categorias no las muestra).
+modeloglm <- glm(formula = Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + GROUP:Edad + Fumar:Sexo + EVBRD:Sexo + Fumar:EVBRD:Sexo, family=poisson, data=datos)
+parametros_glm=modeloglm$coefficients
+parametros_glm
+	
+	#--> Calculamos la desviacion tipica de los parametros.
+
+error_estandar_param=summary(modeloglm)$coefficients[,2]
+error_estandar_param
+
+	#--> Mostramos la tabla 5 del informe 
+
+ic = function(parametro, sigma, conf.level=0.95) {
+  inf=parametro-qnorm(0.5*(1+conf.level))*sigma
+  sup=parametro+qnorm(0.5*(1+conf.level))*sigma
+  return(list(inf,sup))
+}
+tabla_resultados = function(est_parametros=parametros_glm,error_est=error_estandar_param){
+  estimaciones=vector()
+  exp_estimaciones=vector()
+  IC_estim=matrix(data=NA,nrow = length(est_parametros), ncol = 2)
+  IC_exp_estim=matrix(data=NA,nrow = length(est_parametros), ncol = 2)
+  
+  for(i in 1:length(est_parametros)){
+    estimaciones[i]=est_parametros[i]
+    exp_estimaciones[i]=exp(est_parametros[i])
+    for(j in 1:2){
+      IC_estim[i,j]=ic(est_parametros[i],error_est[i],0.95)[[j]]
+      IC_exp_estim[i,j]=exp(IC_estim[i,j])
+    }
+  }  
+  return(data.frame(names(est_parametros),estimaciones, 
+exp_estimaciones, IC_inf_est=IC_estim[,1],IC_sup_est=IC_estim[,2], IC_inf_exp_est=IC_exp_estim[,1], IC_sup_exp_est=IC_exp_estim[,2]))
+}
+resultados_completa=tabla_resultados()
+resultados_completa
+```
+
+| Efecto            | $\lambda$   | Error típico | Z      | IC 95%               |exp $\lambda$|
+|-------------------|-------------|--------------|--------|----------------------|-------------|
+| Constante         |-5.247       | —            | —      | —                    | 0.005       |
+| GROUP: MCAVI (G)* | 3.688       | 1.017        | 3.626  | (1.696,	5.681)       | 40          |
+| Fumar: No (F)*    | 2.485       | 1.041        | 2.387  | (0.445,	4.525)       | 12          |
+| EVBRD: No (B)     | 2.028       | 1.583        | 1.281  | (-1.075, 5.131)      | 7.6         |
+| Edad: 0-14 (E)    | -18.082     | 3620.127     | -0.005 | (-7113.401, 7077.238)| 0           |
+| Edad: 15-20 (E)   | -18.082     | 3620.127     | -0.005 | (-7113.401, 7077.238)| 0           |
+| Edad: 21-30 (E)   | -0.693      | 1.225        | -0.566 | (-3.094, 1.707)      | 0.5         |
+| Edad: 31-40 (E)   | 1.099       | 0.816        | 1.347  | (-0.502,	2.698)     | 3           |
+| Edad: 41-50 (E)   | -0.693      | 1.225        | -0.566 | (-3.094,	1.707)     | 0.5         |
+| Edad: 51-60 (E)*  | 1.609       | 0.775        | 2.076  | (0.091,	3.127)       | 5           |
+| Sexo: Mujer       | -16.68      | 2540.397     | -0,007 | (-4995.768,	4962.407)| 0           |
+| GB: MCAVI-No*     | -2.485      | 0.788        | -3.154 | (-4.028,	-0.941)    | 0.083       |
+| FB: No-No         | 0.734       | 1.457        | 0.504  | (-2.122,	3.589)     | 2.083       |
+| GE: MCAVI-[0-14]  | -2.228      | 5521.395     | 0.0004 | (-10823.96,	10819.51)| 0.108       |
+| GE: MCAVI-[15-20] | 16.459      | 3620.128     | 0.005  | (-7078.778,	7111.861)| 15267410    |
+| GE: MCAVI-[21-30] | 1.782       |  1.309       | 1.361  | (-2.566,	2.566)     | 1           |
+| GE: MCAVI-[31-40] | -1.792      |  0.938       | -1.91  | (-3.631,	0.048)     | 0.167       |
+| GE: MCAVI-[41-50] | 0.762       |  1.279       | 0.596  | (-1.746,	3.271)     | 2.143       |
+| GE: MCAVI-[51-60] | -1.415      |  0.855       | -1.655 | (-3.09,	0.259)       | 0.243       |
+| FS: No-Mujer      | 17.414      | 2540.397     | 0.007  | (-4961.673,	4996.502)| 36547400    |
+| BS: No-Mujer      | 18.066      | 2540.398     | 0.007  | (-4961.022,	4997.154)| 70171010    |
+| FBS: No-No-Mujer  | -19.311     | 2540.398     | -0.008 | (-4998.399,	4959.777)| 0           |
+
+\begin{center}
+\textit{Tabla 3: Estimación de los parámetros}
+\end{center}
+
+En esta tabla se han obtenido las estimaciones de los parámetros junto a su exponencial, intervalos de confianza error típico y Z-valor, siendo algunos de ellos significativos ya que el valor de **Z** en valor absoluto es mayor que 1.96. Aún así, la mayoría de ellos tienen un Z-valor menor de 1.96, los cuales no son significativos. Los que han resultado significativos estarán señalados con un *.
+
+Una breve interpretación de lo obtenido en la tabla:
+
+- Parámetro constante. Indica el número esperado de pacientes sanos, que fuman, que presentan EVBRD, con una edad mayor o igual de 61 y varones es 0.005.
+
+- Efectos principales. Se refiere a las exponenciales de los efectos principales de una variable, que son las ventajas a favor de la categoría asociada en lugar de la última para los individuos que están en las últimas categorías del resto de variables.
+
+    - Variable Group. La ventaja de ser diagnosticado con MCAVI para pacientes varones, que presenten EVBRD, fuman y tengan una edad de 61 años o mayor es de 40 frente a ser diagnosticado como sano.
+    - Variable Fumar. La ventaja de no fumar para pacientes varones, sanos, que presenten EVBRD y tengan una edad de 61 años o mayor es de 12 frente a fumar.
+    - Variable Edad. La ventaja de tener entre 51 y 60 años para pacientes varones, sanos, que presenten EVBRD y sean fumadores es de 5 frente a tener 61 años o más.
+
+- Interacciones. Se utilizarán las exponenciales de las interacciones entre cada par de variables como los cocientes de ventajas ordinarios para los individuos que pertenecen a la última categoría de la variable no involucrada.
+
+    - La ventaja de ser diagnosticado de MCAVI y no presentar EVBRD es de 0.083 para pacientes varones, fumadores y con 61 años o más.
+
+Después de haber obtenido el modelo log-lineal que mejor se ajusta a los datos, se puede ajustar un modelo logit.
+
+## Modelo logit
+
+Teniendo en cuenta el modelo anterior, donde se seleccionó el modelo más parsimonioso que se ajusta bien a la tabla, que fue el modelo {GB, FB, GE, FS, BS, FBS}, no se diferenció entre variables explicativas y de respuesta, en este modelo se hará. Se ajustará un modelo logit que trate 'Presencia de EVBRD' como variable respuesta y las variables 'Group' 'Fumar', 'Sexo' y 'Edad' como variables explicativas.
+
+**Expresión log-lineal**: $ln(m_{ijklm})= \mu + \lambda_{i}^{G} + \lambda_{j}^{F} + \lambda_{k}^{B} + \lambda_{l}^{E} + \lambda_{m}^{S} + \lambda_{ik}^{GB} + \lambda_{jk}^{FB} + \lambda_{il}^{GE} + \lambda_{jm}^{FS} + \lambda_{km}^{BS} + \lambda_{jkm}^{FBS}, \\ i, j, k, l = 1, 2, m = 2, 3, .., 7.$
+
+
+### Fórmula del modelo logit
+
+Este modelo log-lineal implica este **modelo logit**:
+
+$$ l_{ijklm}= ln(\frac{m_{ij1lm}}{m_{ij2lm}}) = $$
+
+$$(\mu + \lambda_{i}^{G} + \lambda_{j}^{F} + \lambda_{1}^{B} + \lambda_{l}^{E} + \lambda_{m}^{S} + \lambda_{i1}^{GB} + \lambda_{j1}^{FB} + \lambda_{il}^{GE} + \lambda_{jm}^{FS} + \lambda_{1m}^{BS} + \lambda_{j1m}^{FBS}) -$$ 
+
+$$(\mu + \lambda_{i}^{G} + \lambda_{j}^{F} + \lambda_{2}^{B} + \lambda_{l}^{E} + \lambda_{m}^{S} + \lambda_{i2}^{GB} + \lambda_{j2}^{FB} + \lambda_{il}^{GE} + \lambda_{jm}^{FS} + \lambda_{2m}^{BS} + \lambda_{j2m}^{FBS}) =$$ 
+
+$$(\lambda^{B}_{1} - \lambda^{B}_{2}) + (\lambda_{i1}^{GB} - \lambda_{i2}^{GB}) + (\lambda_{j1}^{FB} - \lambda_{j2}^{FB}) + (\lambda_{1m}^{BS} - \lambda_{2m}^{BS}) + (\lambda_{j1m}^{FBS} - \lambda_{j2m}^{FBS})= $$
+$$ \alpha + \tau^{G}_{i} + \tau^{F}_{j} + \tau^{S}_{m} +\tau^{FS}_{jm}  $$
+
+
+### Modelo equivalente
+
+Se comprueba si este modelo logit es equivalente al modelo log-lineal seleccionado {GB, FB, GE, FS, BS, FBS}:
+
+  1. *Contiene el efecto principal de la variable repuesta*. Como aparece el término $\lambda_{k}^{B}$, se puede verificar esta hipótesis.
+  
+  2. *Contiene las interacciones entre la variable respuesta y cada una de las variables explicativas que aparecen en el modelo logit*. En este caso se cumple, ya que el modelo contiene el término $\lambda_{ik}^{GB}$ asociado a $\tau^{G}_{i}$, el término $\lambda_{jk}^{FB}$ asociado a $\tau^{F}_{j}$, el término $\lambda_{km}^{BS}$ asociado a $\tau^{S}_{m}$, y el término $\lambda_{jkm}^{FBS}$ asociado a $\tau^{FS}_{jm}$ .
+  
+  3. *Contiene la interacción de mayor orden entre todas las variables explicativas de la tabla*. Esta condición no se verifica puesto que el modelo log-lineal no contiene la interacción entre Group, Fumar, Sexo y Edad.
+  
+Por tanto, el modelo {GB, FB, GE, FS, BS, FBS} no es equivalente, y se considerará el modelo equivalente {GB, FB, BS, FBS, GFES}.
+
+
+```{r, echo=FALSE, results='hide'}
+summary(loglm(formula = Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + EVBRD:Sexo + Fumar:EVBRD:Sexo + GROUP:Fumar:Edad:Sexo, data = datos))$test[1,]
+```
+
+|                  | $X^{2}$     | df     | p-valor|
+|----------------------|---------|---------|---------|
+| Likelihood Ratio | 22.434  | 51 | 0.999 |
+
+Las estimaciones pertenecientes a este modelo son:
+
+$$\hat{\alpha}=(\lambda^{B}_{1} - \lambda^{B}_{2}) \text{, } \hat{\tau}^G_i=(\lambda_{i1}^{GB} - \lambda_{i2}^{GB})$$,  $$\hat{\tau}^F_j = (\lambda_{j1}^{FB} - \lambda_{j2}^{FB}) \text{, } \hat{\tau}^S_m = (\lambda_{1m}^{BS} - \lambda_{2m}^{BS}) \text{, } \hat{\tau}^{FS}_{jm} = (\lambda_{j1m}^{FBS} - \lambda_{j2m}^{FBS})$$
+
+La estimación de los parámetros por máxima verosimilitud de este modelo log-lineal se ha realizado mediante el método marginal. En la siguiente tabla se recogen los parámetros estimados del modelo log-lineal equivalente {GB, FB, BS, FBS, GFES}, junto con el valor Z correspondiente.
+
+| Parámetros                        | M. Parcial (Z.valor)|
+|-----------------------------------|---------------------|
+|No = $\lambda^B_1$ = $\hat{\alpha}$                 | 2.028 (1.281)       |
+|MCAVI-No = $\lambda^{GB}_{11}$ = $\hat{\tau}^G_1$   | -2.485 (-3.154)     |
+|No-No = $\lambda^{FB}_{11}$ = $\hat{\tau}^F_1$      | 0.734 (0.504)       |
+|No-Mujer = $\lambda^{BS}_{11}$ = $\hat{\tau}^S_1$     | 18.066 (0.007)      |
+|No-No-Mujer = $\lambda^{FBS}_{111}$ = $\hat{\tau}^{FS}_{11}$| -19.311 (-0.008)    |
+
+La interpretación de estas estimaciones son:
+
+  - $\hat{\alpha}$. La ventaja a favor de no presentar EVBRD sería $e^{2.028}=7.6$, pero al ser no significativo no existen diferencias en la probabilidad de presentar EVBRD si el paciente es sano, fumador, hombre y mayor de 61 años.
+  
+  - El efecto del grupo sobre la presencia de extrasístoles, $\hat{\tau}^{G}_{1}$, viene dado por el cocientes de ventajas
+  
+  $$\widehat{\theta}^{GB}=exp(\widehat{\tau}^{G}_{1} - \widehat{\tau}^{G}_{2}) = e^{-2.485} = 0.083 \longrightarrow \frac{1}{0.083} = 12.05$$
+  
+  Esto es, la probabilidad de presentar EVBRD es 12.05 veces mayor para los que son portadores de la enfermedad MCAVI que para los que son sanos.
+  
+  - El efecto de fumar sobre la presencia de extrasístoles, $\hat{\tau}^{F}_{1}$, viene dado por el cocientes de ventajas
+  
+  $$\widehat{\theta}^{FB}=exp(\widehat{\tau}^{F}_{1} + \widehat{\tau}^{FS}_{11}) = e^{0.734-19.311} = 8.552861e-09 \longrightarrow \frac{1}{8.552861e-09} = 116919941$$
+  
+  Al no ser significativo, no hay diferencias en la probabilidad de presentar EVBRD si el pacientes es fumador o no.
+  
+  - El efecto del sexo sobre la presencia de extrasístoles, $\hat{\tau}^{S}_{1}$, viene dado por el cocientes de ventajas
+  
+  $$\widehat{\theta}^{BS}=exp(\widehat{\tau}^{S}_{1} + \widehat{\tau}^{FS}_{11}) = e^{18.066-19.311} = 0.288 \longrightarrow \frac{1}{0.288} = 3.47$$
+  
+  Esto es, la probabilidad de presentar EVBRD es 3.47 veces mayor para las mujeres no fumadoras que para los hombres fumadores.
+  
+  La probabilidad de presentar EVBRD es $exp(\hat{\tau}_1)=70139733 \longrightarrow \frac{1}{70139733} = 0$, es decir, es nula para los casos en los que hay hombres no fumadores.
+  
+\newpage
+# Conclusiones
+
+El objetivo principal de este trabajo ha sido analizar la asociación entre la presencia de estrasístoles ventriculares con morfología de bloqueo de rama derecha (EVBRD) y la miocardiopatía arritmogénica con afectación del ventrículo izquierdo (MCAVI), considerando además otros factores de riesgo como el sexo, el hábito de fumar y la edad.
+
+Mediante el ajuste de un modelo log-lienal y un modelo logit, se ha comprobado que el modelo log-lineal seleccionado {GB, FB, BS, FBS, GFES} porporciona un buen ajuste a los datos y sin evidencia de desajuste sistemáticos en los residuos, excepto en una combinación puntual.
+
+Las estimaciones del modelo logit permiten interpretar las asociaciones entre variables. Entre as conclusiones destacadas se encuentran:
+
+- La presencia de EVBRD está fuertemente asociada a padecer MCAVI, ya que los pacientes con la enfermedad tienen una una probabilidad estimada 12 veces mayor de presentar EVBRD en comparación con los individuos sanos.
+
+- El efecto del sexo sobre la presencia de EVBRD muestra que, dentro del grupo de mujeres no fumadoras, la probabilidad es 3.47 veces mayor que en hombre fumadores, esto puede deberse a que las personas afectadas por la enfermedad no tienen el hábito de fumar. Sin embargo, estos efectos no se han visto que sean significativos estadísticamente. 
+
+- Al efecto de fumar le ocurre lo mismo que al efecto del sexo sobre la presencia de EVBRD, ya que no existe evidencia significativa para afirmar que fumar esté asociado con presentar EVBRD.
+
+- Respecto al efecto de la edad, se ha obtenido que es independiente de la presencia de EVBRD, por lo que no existe una asociación entre ellos.
+
+Finalmente, el estudio permite concluir que la miocardiopatía arritmogénica con afectación del ventrículo izquierdo tiene una relación estadísticamente significativa con la aparición de EVBRD. 
+
+Además, señalar las limitaciones del estudio debido al tamaño reducido de la muestra, ya que se tienen pocas observaciones, por lo que es más difícil detectar asociaciones entre las variables, lo que puede dar lugar a errores tipo II, no detectar un efecto que sí existe. Este tamaño de la muestra también ha provocado que existan celdas con 0 o 1 observaciones, dificultando la estimación de parámetros e interacciones.
+
+
+\newpage
+# Anexo
+
+```{r, echo=FALSE}
+print(cbind(datos,residuos_estandar))
+```
+
+\begin{center}
+\textit{Tabla 2: Análisis de los residuos}
+\end{center}
+
+## Código
+
+```{r, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo=TRUE,  message=T, warning=F, eval=TRUE, comment="", results="markup")
+# comment evita el que aparezca el símbolo ## en el 
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(scales)
+```
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+#Datos que vamos a usar
+datos <- read_xlsx("basedatos.xlsx", col_names = T)
+datos <- as.data.frame(datos)
+datos
+```
+
+```{r, results='hide'}
+datos <- datos[, c(2, 6, 94, 5, 4)]
+datos <- datos[-c(64:83),]
+colnames(datos) <- c("GROUP", "Fumar", "EVBRD", "Sexo", "Edad")
+head(datos)
+```
+
+```{r}
+datos$GROUP <- factor(datos$GROUP, levels = c(0, 1), labels = c("MCAVI", "Sanos"))
+
+datos$Fumar <- factor(datos$Fumar, levels = c(0, 1), labels = c("No", "Sí"))
+
+datos$EVBRD <- factor(datos$EVBRD, levels = c(0, 1), labels = c("No", "Sí"))
+
+datos$Sexo <- factor(datos$Sexo, levels = c(0, 1), labels = c("Mujer", "Hombre"))
+
+datos$Edad <- factor(datos$Edad, levels = 1:7, labels = c("0-14", "15-20", "21-30", "31-40", "41-50", "51-60", ">61"))
+```
+
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+datos <- table(datos)
+datos
+```
+
+
+```{r, results='hide'}
+datos <- as.data.frame(datos)
+datos
+```
+
+```{r, message=FALSE, warning=FALSE}
+require(MASS)
+```
+
+```{r, results='hide'}
+saturado = glm(Freq ~GROUP*Fumar*EVBRD*Edad*Sexo , family = poisson, data = datos)
+
+names(saturado)
+
+saturado$param
+
+summary(saturado)
+```
+
+
+```{r, results='hide', warning=FALSE}
+modelo_final <- step(saturado, direction="backward", test="Chisq")
+modelo_final
+```
+
+```{r, results='hide'}
+summary(loglm(formula = Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + GROUP:Edad + Fumar:Sexo + EVBRD:Sexo + Fumar:EVBRD:Sexo, data = datos))$test[1,]
+```
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(igraph)
+
+grafo <- graph_from_literal(
+  G -- B,  # GB
+  F -- B,
+  F -- S,
+  B -- S,
+  G -- E
+)
+
+set.seed(123)
+plot(grafo,
+     layout = layout_in_circle,
+     vertex.color = "#AED6F1",
+     vertex.size = 50,
+     vertex.label.cex = 2,
+     vertex.label.color = "black",
+     edge.width = 2,
+     edge.color = "#5D6D7E")
+```
+
+
+```{r}
+contrasts(datos$GROUP) = contr.treatment(2, 2)
+contrasts(datos$Fumar) = contr.treatment(2, 2) 
+contrasts(datos$EVBRD) = contr.treatment(2, 2)
+contrasts(datos$Sexo) = contr.treatment(2, 2)
+contrasts(datos$Edad) = contr.treatment(7, 7)
+```
+
+```{r, results='hide'}
+modelo.glm = glm(Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + GROUP:Edad + Fumar:Sexo + EVBRD:Sexo + Fumar:EVBRD:Sexo, family=poisson,data=datos)
+
+residuos_estandar = rstandard(modelo.glm)
+cbind(datos,residuos_estandar)
+```
+
+
+```{r, results='hide'}
+	#--> Estimamos los parametros del modelo (las ultimas categorias no las muestra).
+modeloglm <- glm(formula = Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + GROUP:Edad + Fumar:Sexo + EVBRD:Sexo + Fumar:EVBRD:Sexo, family=poisson, data=datos)
+parametros_glm=modeloglm$coefficients
+parametros_glm
+	
+	#--> Calculamos la desviacion tipica de los parametros.
+
+error_estandar_param=summary(modeloglm)$coefficients[,2]
+error_estandar_param
+
+	#--> Mostramos la tabla 5 del informe 
+
+ic = function(parametro, sigma, conf.level=0.95) {
+  inf=parametro-qnorm(0.5*(1+conf.level))*sigma
+  sup=parametro+qnorm(0.5*(1+conf.level))*sigma
+  return(list(inf,sup))
+}
+tabla_resultados = function(est_parametros=parametros_glm,error_est=error_estandar_param){
+  estimaciones=vector()
+  exp_estimaciones=vector()
+  IC_estim=matrix(data=NA,nrow = length(est_parametros), ncol = 2)
+  IC_exp_estim=matrix(data=NA,nrow = length(est_parametros), ncol = 2)
+  
+  for(i in 1:length(est_parametros)){
+    estimaciones[i]=est_parametros[i]
+    exp_estimaciones[i]=exp(est_parametros[i])
+    for(j in 1:2){
+      IC_estim[i,j]=ic(est_parametros[i],error_est[i],0.95)[[j]]
+      IC_exp_estim[i,j]=exp(IC_estim[i,j])
+    }
+  }  
+  return(data.frame(names(est_parametros),estimaciones, 
+exp_estimaciones, IC_inf_est=IC_estim[,1],IC_sup_est=IC_estim[,2], IC_inf_exp_est=IC_exp_estim[,1], IC_sup_exp_est=IC_exp_estim[,2]))
+}
+resultados_completa=tabla_resultados()
+resultados_completa
+```
+
+```{r, results='hide'}
+summary(loglm(formula = Freq ~ GROUP + Fumar + EVBRD + Edad + Sexo + GROUP:EVBRD + 
+    Fumar:EVBRD + EVBRD:Sexo + Fumar:EVBRD:Sexo + GROUP:Fumar:Edad:Sexo, data = datos))$test[1,]
+```
+
+\newpage
+# Bibliografía
+
+[1] Rootwelt-Norberg, C., Lie, Ø. H., Chivulescu, M., Castrini, A. I., Sarvari, S. I., Lyseggen, E., ... & Haugaa, K. H. (2021). Sex differences in disease progression and arrhythmic risk in patients with arrhythmogenic cardiomyopathy. EP Europace, 23(7), 1084-1091.
+
+[2] Fundación Española del Corazón. (s.f.). Vivir con miocardiopatía arritmogénica.
+[Cardiopatías familiares. URL](https://cardiopatiasfamiliares.es/vivir-miocardiopatia-arritmogenica)
+
+[3] Aguilera, B., Mier, M. P. S., & Morentin, B. (1999). Miocardiopatía arritmogénica como causa de muerte súbita en España. Presentación de 21 casos. Revista Española de Cardiología, 52(9), 656-662.
+
+[4] Corrado D, Perazzolo Marra M, Zorzi A, et al. Diagnosis of arrhythmogenic cardiomyopathy: The Padua criteria. Int J Cardiol. 2020;319:106-114. doi:10.1016/j.ijcard.2020.06.005
